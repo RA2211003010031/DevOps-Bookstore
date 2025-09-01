@@ -1,5 +1,5 @@
 const getBaseUrl = () => {
-  return "https://book-store-app-backend-ten.vercel.app"; 
+  return import.meta.env.VITE_API_BASE_URL;
 }
 
 export default getBaseUrl;
