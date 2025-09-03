@@ -2,6 +2,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/DevOps-Bookstore/', // <-- must match your repo name
+  base: '/', // Changed from '/DevOps-Bookstore/' to serve at root
   plugins: [react()],
 });

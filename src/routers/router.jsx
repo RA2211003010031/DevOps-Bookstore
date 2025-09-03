@@ -44,10 +44,9 @@ const router = createBrowserRouter(
         { path: "manage-books", element: <AdminRoute><ManageBooks /></AdminRoute> }
       ]
     }
-  ],
-  {
-    basename: "/DevOps-Bookstore", // Temporarily disable for local development
-  }
+  ]
+  // Removed basename for root path deployment
+  // { basename: "/DevOps-Bookstore" } // Use this for subdirectory deployments
 );
 
 export default router;

@@ -11,7 +11,8 @@ function App() {
     <>
       <AuthProvider>
         <Navbar />
-        <Analytics />
+        {/* Only load Analytics when deployed on Vercel */}
+        {import.meta.env.PROD && typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') && <Analytics />}
         <main className='min-h-screen max-w-screen-2xl mx-auto px-5 py-6 font-primary'>
           <Outlet />
         </main>
