@@ -9,41 +9,32 @@ terraform {
 
 provider "docker" {}
 
-resource "docker_image" "frontend" {
-  name = "devops-bookstore-frontend:latest"
-
-  build {
-    context    = "/Users/adarshraj/Desktop/DevOps-Bookstore"
-  }
-}
-
-resource "docker_container" "frontend" {
-  name  = "devops-frontend"
-  image = docker_image.frontend.name
-
-  ports {
-    internal = 80
-    external = 3000
-  }
-
-  restart = "always"
-}
-
+# Backend Docker Image
 resource "docker_image" "backend" {
-  name = "devops-bookstore-backend:latest"
-
+  name = "bookstore-backend:latest"
   build {
-    context    = "/Users/adarshraj/Desktop/DevOps-Bookstore/backend"
+    context    = "${path.root}/../backend"
+    dockerfile = "Dockerfile"
   }
 }
 
+# Frontend Docker Image  
+resource "docker_image" "frontend" {
+  name = "bookstore-frontend:latest"
+  build {
+    context    = "${path.root}/.."
+    dockerfile = "Dockerfile"
+  }
+}
+
+# Backend Container
 resource "docker_container" "backend" {
-  name  = "devops-backend"
+  name  = "bookstore-backend"
   image = docker_image.backend.name
 
   ports {
     internal = 5000
-    external = 5001
+    external = var.backend_port
   }
 
   env = [
@@ -51,6 +42,17 @@ resource "docker_container" "backend" {
     "MONGO_URI=${var.mongo_uri}",
     "JWT_SECRET=${var.jwt_secret}"
   ]
+}
 
-  restart = "always"
+# Frontend Container
+resource "docker_container" "frontend" {
+  name  = "bookstore-frontend"
+  image = docker_image.frontend.name
+
+  ports {
+    internal = 80
+    external = var.frontend_port
+  }
+
+  depends_on = [docker_container.backend]
 }

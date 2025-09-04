@@ -38,6 +38,16 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint for Terraform/Docker health checks
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'devops-bookstore-backend',
+    version: process.env.npm_package_version || '1.0.0'
+  });
+});
+
 app.get('/api/books', async (req, res) => {
   try {
     let books = await Book.find(); // Fetch all books
@@ -50,7 +60,7 @@ app.get('/api/books', async (req, res) => {
           description: "A classic novel about the American Dream",
           category: "Fiction",
           trending: true,
-          coverImage: "/assets/book-1.png",
+          coverImage: "book-1.png",
           oldPrice: 25.99,
           newPrice: 19.99
         },
@@ -59,7 +69,7 @@ app.get('/api/books', async (req, res) => {
           description: "A story about justice and morality",
           category: "Fiction",
           trending: true,
-          coverImage: "/assets/book-2.png",
+          coverImage: "book-2.png",
           oldPrice: 22.99,
           newPrice: 17.99
         },
@@ -68,7 +78,7 @@ app.get('/api/books', async (req, res) => {
           description: "A dystopian novel about totalitarianism",
           category: "Science Fiction",
           trending: false,
-          coverImage: "/assets/book-3.png",
+          coverImage: "book-3.png",
           oldPrice: 24.99,
           newPrice: 18.99
         },
@@ -77,7 +87,7 @@ app.get('/api/books', async (req, res) => {
           description: "A romantic novel by Jane Austen",
           category: "Romance",
           trending: true,
-          coverImage: "/assets/book-4.png",
+          coverImage: "book-4.png",
           oldPrice: 20.99,
           newPrice: 15.99
         },
@@ -86,7 +96,7 @@ app.get('/api/books', async (req, res) => {
           description: "A coming-of-age novel",
           category: "Fiction",
           trending: false,
-          coverImage: "/assets/book-5.png",
+          coverImage: "book-5.png",
           oldPrice: 23.99,
           newPrice: 16.99
         }
@@ -97,7 +107,62 @@ app.get('/api/books', async (req, res) => {
     
     res.json(books);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching books', error: err.message });
+    console.error('Database error:', err.message);
+    // Fallback data when MongoDB is not available
+    const fallbackBooks = [
+      {
+        _id: "1",
+        title: "The Great Gatsby",
+        description: "A classic novel about the American Dream",
+        category: "Fiction",
+        trending: true,
+        coverImage: "book-1.png",
+        oldPrice: 25.99,
+        newPrice: 19.99
+      },
+      {
+        _id: "2",
+        title: "To Kill a Mockingbird",
+        description: "A story about justice and morality",
+        category: "Fiction",
+        trending: true,
+        coverImage: "book-2.png",
+        oldPrice: 22.99,
+        newPrice: 17.99
+      },
+      {
+        _id: "3",
+        title: "1984",
+        description: "A dystopian novel about totalitarianism",
+        category: "Science Fiction",
+        trending: false,
+        coverImage: "book-3.png",
+        oldPrice: 24.99,
+        newPrice: 18.99
+      },
+      {
+        _id: "4",
+        title: "Pride and Prejudice",
+        description: "A romantic novel by Jane Austen",
+        category: "Romance",
+        trending: true,
+        coverImage: "book-4.png",
+        oldPrice: 20.99,
+        newPrice: 15.99
+      },
+      {
+        _id: "5",
+        title: "The Catcher in the Rye",
+        description: "A coming-of-age novel",
+        category: "Fiction",
+        trending: false,
+        coverImage: "book-5.png",
+        oldPrice: 23.99,
+        newPrice: 16.99
+      }
+    ];
+    
+    res.json(fallbackBooks);
   }
 });
 
